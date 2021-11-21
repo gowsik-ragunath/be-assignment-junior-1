@@ -1,0 +1,12 @@
+.form-label
+	= f.label :shared_with
+= f.select :user_id, options_from_collection_for_select(User.all, :id, :name)
+
+.form-label
+	= f.label :owed_amount
+= f.text_field :owed_amount, class: "mb-3 form-control"
+
+.form-label
+	= f.label :paid_amount
+= f.text_field :paid_amount, class: "mb-3 form-control"
+

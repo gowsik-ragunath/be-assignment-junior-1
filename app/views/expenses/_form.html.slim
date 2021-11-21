@@ -1,0 +1,29 @@
+= form_with model: expense do |form|
+	
+	
+	/! date starts
+	.form-label
+		= form.label :date
+	= form.date_field :date, class: "mb-3 form-control"
+	/! -date ends
+
+	/! descrription starts
+	.form-label
+		= form.label :description
+	= form.text_area :description, class: "mb-3 form-control"
+	/! -description ends
+
+	/! -amount
+	.form-label
+		= form.label :amount
+	= form.text_field :amount, class: "mb-3 form-control"
+	/! -amount ends
+
+	= form.fields_for :user_expenses, @user_expense do |f|
+		= f.hidden_field :user_id, value: current_user.id
+
+	= link_to_add_fields 'Add User', form, :user_expenses, { partial: "expenses/user_expense_fields" }
+
+	
+	.mb-3
+		= form.submit "Add expense", class: "btn btn-primary"
