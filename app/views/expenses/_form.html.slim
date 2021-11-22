@@ -1,26 +1,36 @@
 = form_with model: expense do |form|
 	
 	
-	/! date starts
+	/! date div starts
 	.form-label
 		= form.label :date
-	= form.date_field :date, class: "mb-3 form-control"
-	/! -date ends
+	= form.date_field :date, class: "mb-3 form-control", value: Time.now.strftime('%Y-%m-%d')
+	/! -date div ends
 
-	/! descrription starts
+	/! description div starts
 	.form-label
 		= form.label :description
 	= form.text_area :description, class: "mb-3 form-control"
-	/! -description ends
+	/! -description div ends
 
-	/! -amount
+	/! -amount div starts
 	.form-label
 		= form.label :amount
 	= form.text_field :amount, class: "mb-3 form-control"
-	/! -amount ends
+	/! -amount div ends
 
-	= form.fields_for :user_expenses, @user_expense do |f|
-		= f.hidden_field :user_id, value: current_user.id
+	/! -Payer div starts
+	.form-label
+		= form.label :payer
+	= form.select :payer_id, options_from_collection_for_select(User.all, :id, :name, current_user.id), { prompt: "Select a User" }, { class: "form-select form-select-sm mb-3" }
+	/! -Payer div ends
+
+	/! -Split div starts
+	.form-check
+		= form.check_box :split, class: "form-check-input", checked: true
+		.mb-3.form-check-label
+			= form.label "Check if amount need to be split"
+	/! -Split div ends
 
 	= link_to_add_fields 'Add User', form, :user_expenses, { partial: "expenses/user_expense_fields" }
 

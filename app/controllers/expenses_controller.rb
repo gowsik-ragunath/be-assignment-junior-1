@@ -29,6 +29,8 @@ class ExpensesController < ApplicationController
 				:amount, 
 				:date,
 				:description,
+				:payer_id,
+				:split,
 				user_expenses_attributes: [
 					:user_id,
 					:owed_amount,

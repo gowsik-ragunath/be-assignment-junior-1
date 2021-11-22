@@ -4,9 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-
   # Associations
-
   has_many :expenses
   has_many :user_expenses, dependent: :destroy
   has_many :shared_expenses, through: :user_expenses
