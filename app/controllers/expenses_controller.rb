@@ -34,7 +34,8 @@ class ExpensesController < ApplicationController
 				user_expenses_attributes: [
 					:user_id,
 					:owed_amount,
-					:paid_amount
+					:paid_amount,
+					:add_as_friend
 				]
 			)
 		end

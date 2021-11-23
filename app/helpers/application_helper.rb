@@ -35,5 +35,10 @@ module ApplicationHelper
 	  content_tag(:a, name, html_options, &block)
 	end
 
+	def get_user_name(user)
+		return "" if user.nil?
+
+		user.name.present? ? user.name : user.email
+    end
 
 end

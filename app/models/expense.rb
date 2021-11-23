@@ -5,18 +5,17 @@ class Expense < ApplicationRecord
 
   # Associations
   belongs_to :user
+  belongs_to :payer, class_name: "User", foreign_key: :payer_id
   has_many :user_expenses, dependent: :destroy
   has_many :users, through: :user_expenses
 
-  # Validation callback
-  before_validation :reject_repeating_user_expenses
-
-  # Validation
-  validate :reject_repeating_user_expenses
-  validate :owed_amount_sums_up
-
   # Rich text
   has_rich_text :description
+  
+  # Validation
+  validates :amount, presence: true, format: { with: /\A\d+(?:\.\d{0,2})?\z/ }, numericality: { greater_than: 0, less_than: 1000000 }
+  validate :reject_repeating_user_expenses
+  validate :owed_amount_sums_up
 
   # Nested Atributes
   accepts_nested_attributes_for :user_expenses, allow_destroy: true
@@ -39,11 +38,14 @@ class Expense < ApplicationRecord
     end
 
     def owed_amount_sums_up
-      if self.split != "1"
+      if self.split != "1" && self.amount.present?
         owned_amount_sum = self.user_expenses.collect(&:owed_amount).compact.sum
+        paid_amount_sum = self.user_expenses.collect(&:paid_amount).compact.sum
+
+        pending_amount = self.amount - paid_amount_sum
         
-        unless owned_amount_sum == self.amount
-          errors.add(:amount, "The total of everyone's owed shares ($#{owned_amount_sum}) is different than the total cost ($#{self.amount - owned_amount_sum})")
+        unless pending_amount == owned_amount_sum
+          errors.add(:amount, "The total of everyone's owed shares ($#{owned_amount_sum}) is different than the total cost ($#{pending_amount})")
         end 
         
       end

@@ -7,7 +7,8 @@ class User < ApplicationRecord
   # Associations
   has_many :expenses
   has_many :user_expenses, dependent: :destroy
-  has_many :shared_expenses, through: :user_expenses
-  has_many :friendships, class_name: "Friendship", foreign_key: :friend_id, dependent: :destroy
-  has_many :friends, through: :friendships, source: :user
+  has_many :shared_expenses, through: :user_expenses, source: "expense"
+  
+  has_many :friendships, dependent: :destroy
+  has_many :friends, through: :friendships
 end

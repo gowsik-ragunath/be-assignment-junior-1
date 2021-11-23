@@ -10,3 +10,9 @@
 	= f.label :paid_amount
 = f.text_field :paid_amount, class: "mb-3 form-control"
 
+.form-check
+	= f.check_box :add_as_friend, class: "form-check-input", checked: true
+	.mb-3.form-check-label
+		= f.label "Add this user as friend"
+
+

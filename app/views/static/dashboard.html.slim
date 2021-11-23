@@ -1,9 +1,5 @@
 .dashboard-wrapper
-  aside.side-bar-area
-    .friends-list
-      p.friends-list-header FRIENDS
-      a.friend-name anbu
-      a.friend-name barath
+  = render "shared/friends_list", friends: @friends
   .main-area
     .top-bar
       h1.top-bar-title Dashboard

@@ -1,49 +1,22 @@
 .dashboard-wrapper
-  aside.side-bar-area
-    .friends-list
-      p.friends-list-header FRIENDS
-      a.friend-name anbu
-      a.friend-name barath
+  = render "shared/friends_list", friends: @friends
   .main-area
     .top-bar
-      h1.top-bar-title Dashboard
+      h1.top-bar-title = get_user_name(@user)
       .top-bar-actions
         button.btn.btn-primary type="button"  Add an expense
         button.btn.btn-secondary type="button"  Settle up
     .expenses-list
-      .expense-item
-        .item-lhs
-          p SEP 30
-          p Hello
-        .item-rhs
-          .you-details
-            p you paid
-            p $23.00
-          .you-details
-            p you lent anbu
-            p $11.50
-        button.remove-btn ❌
-      .expense-item
-        .item-lhs
-          p SEP 30
-          p Hello
-        .item-rhs
-          .you-details
-            p you paid
-            p $23.00
-          .you-details
-            p you lent anbu
-            p $11.50
-        button.remove-btn ❌
-      .expense-item
-        .item-lhs
-          p SEP 30
-          p Hello
-        .item-rhs
-          .you-details
-            p you paid
-            p $23.00
-          .you-details
-            p you lent anbu
-            p $11.50
-        button.remove-btn ❌
+      - @user.user_expenses.each do |user_expense|
+        .expense-item
+          .item-lhs
+            p = user_expense.created_at.strftime("%b %-d")
+            p = get_user_name(user_expense.user)
+          .item-rhs
+            .you-details
+              p you paid
+              p $#{user_expense.paid_amount.to_f}
+            .you-details
+              p you lent #{get_user_name(user_expense.expense.payer)}
+              p $#{user_expense.owed_amount.to_f}
+          button.remove-btn ❌
