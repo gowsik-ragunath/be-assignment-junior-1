@@ -5,9 +5,18 @@ class ExpensesController < ApplicationController
 
 	# Post /expenses
 	def create
-		@expense = current_user.expenses.create!(expense_params)
+		@expense = current_user.expenses.new(expense_params)
 
-		redirect_to root_url
+		respond_to do |format|
+			if @expense.save
+				@new_expense = Expense.new
+
+				format.html { redirect_to root_url }
+				format.js
+			else
+				format.js
+			end
+		end
 	end
 
 	# Get /expenses/:id

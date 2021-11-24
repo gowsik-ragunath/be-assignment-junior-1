@@ -1,18 +1,21 @@
-.form-label
-	= f.label :shared_with
-= f.select :user_id, options_from_collection_for_select(User.all, :id, :name)
-
-.form-label
-	= f.label :owed_amount
-= f.text_field :owed_amount, class: "mb-3 form-control"
-
-.form-label
-	= f.label :paid_amount
-= f.text_field :paid_amount, class: "mb-3 form-control"
-
-.form-check
-	= f.check_box :add_as_friend, class: "form-check-input", checked: true
-	.mb-3.form-check-label
-		= f.label "Add this user as friend"
+.user_expense_field
+	.form-label
+		= f.label :share_with
+	= f.select :user_id, options_from_collection_for_select(User.all, :id, :name)
 
 
+	= link_to "❌", "javascript:void(0)", class: "ml-1 remove-element"
+
+	.unequal_amount.disable
+		.form-label
+			= f.label :owed_amount
+		= f.text_field :owed_amount, class: "mb-3 form-control"
+
+		.form-label
+			= f.label :paid_amount
+		= f.text_field :paid_amount, class: "mb-3 form-control"
+
+	.form-check
+		= f.check_box :add_as_friend, class: "form-check-input", checked: true
+		.mb-3.form-check-label
+			= f.label "Add this user as friend"

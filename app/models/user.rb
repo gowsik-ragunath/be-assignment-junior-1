@@ -8,7 +8,6 @@ class User < ApplicationRecord
   has_many :expenses
   has_many :user_expenses, dependent: :destroy
   has_many :shared_expenses, through: :user_expenses, source: "expense"
-  
   has_many :friendships, dependent: :destroy
   has_many :friends, through: :friendships
 end

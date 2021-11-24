@@ -10,7 +10,7 @@ class UserExpense < ApplicationRecord
   validates_uniqueness_of :user_id, scope: :expense_id
 
   # Callbacks
-  before_create :set_owed_amount, if: :expense_is_not_split?
+  before_create :set_owed_amount, if: :expense_split?
 
   after_create_commit :create_friend, if: :can_add_as_friend
 
@@ -21,8 +21,8 @@ class UserExpense < ApplicationRecord
       self.add_as_friend.present? && self.add_as_friend
     end
 
-    def expense_is_not_split?
-      !(self.expense.split.present? && self.expense.split == "1")
+    def expense_split?
+      self.expense.split.present? && self.expense.split == "1"
     end
 
     # Callback methods

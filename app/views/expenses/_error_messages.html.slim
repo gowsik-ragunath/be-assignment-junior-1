@@ -1,0 +1,3 @@
+.alert.alert-danger
+    - record.errors.each do |error|
+        div = "#{error.attribute.capitalize}: #{error.message}"

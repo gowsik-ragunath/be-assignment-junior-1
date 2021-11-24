@@ -153,6 +153,11 @@
   padding: 0;
   background-color: transparent;
   border: none;
+
+  &.external {
+    display: block;
+  }
+
 }
 
 .expense-item .item-lhs {
