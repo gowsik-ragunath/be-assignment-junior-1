@@ -33,5 +33,8 @@
 			= form.label "Check if amount need to be split"
 	/! -Split div ends
 
+	= form.fields_for :user_expenses, expense.user_expenses.build do |f|
+		= render "expenses/user_expense_fields", f: f, user_id: current_user.id 
+
 	= link_to_add_fields 'Add User', form, :user_expenses, { partial: "expenses/user_expense_fields" }
 	= form.submit "Add expense", id: "add_expense", class: "disable"

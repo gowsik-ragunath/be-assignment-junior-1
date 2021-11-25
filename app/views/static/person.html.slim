@@ -3,9 +3,8 @@
   .main-area
     .top-bar
       h1.top-bar-title = get_user_name(@user)
-      .top-bar-actions
-        button.btn.btn-primary type="button"  Add an expense
-        button.btn.btn-secondary type="button"  Settle up
+      = render "shared/top_bar_action"
+      
     .expenses-list
       - @user.user_expenses.each do |user_expense|
         .expense-item
@@ -20,3 +19,5 @@
               p you lent #{get_user_name(user_expense.expense.payer)}
               p $#{user_expense.owed_amount.to_f}
           button.remove-btn ❌
+
+= render "shared/expense_modal"

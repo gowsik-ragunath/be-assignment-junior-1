@@ -2,6 +2,7 @@ class Expense < ApplicationRecord
 
   # Attribute Accessor
   attr_accessor :split
+  attr_accessor :equal_split_amount
 
   # Associations
   belongs_to :user
@@ -12,15 +13,32 @@ class Expense < ApplicationRecord
   # Rich text
   has_rich_text :description
   
-  # Validation
+  # Validations
   validates :amount, presence: true, format: { with: /\A\d+(?:\.\d{0,2})?\z/ }, numericality: { greater_than: 0, less_than: 1000000 }
   validate :reject_repeating_user_expenses
-  validate :owed_amount_sums_up
+  validate :owed_amount_sums_up, if: :unequal_split?
 
   # Nested Atributes
   accepts_nested_attributes_for :user_expenses, allow_destroy: true
 
+  # Callbacks
+
+  before_create :get_equal_split_amount, if: :equal_split?
+
+  
+  # Boolean method
+
+  def equal_split?
+    self.split.present? && self.split == "1" && self.amount.present?
+  end
+
+  def unequal_split?
+    !equal_split?
+  end
+
   private
+
+    # validation methods
 
     def reject_repeating_user_expenses
       user_expenses_user_ids = user_expenses.collect(&:user_id)
@@ -38,16 +56,33 @@ class Expense < ApplicationRecord
     end
 
     def owed_amount_sums_up
-      if self.split != "1" && self.amount.present?
-        owned_amount_sum = self.user_expenses.collect(&:owed_amount).compact.sum
-        paid_amount_sum = self.user_expenses.collect(&:paid_amount).compact.sum
+      owned_amount_sum = self.user_expenses.collect(&:owed_amount).compact.sum
+      paid_amount_sum = self.user_expenses.collect(&:paid_amount).compact.sum
 
-        pending_amount = self.amount - paid_amount_sum
+      pending_amount = self.amount - paid_amount_sum
+      
+      unless pending_amount == owned_amount_sum
+        errors.add(:amount, "The total of everyone's owed shares ($#{owned_amount_sum}) is different than the total cost ($#{pending_amount})")
+      end 
+    end
+
+    # User Expense methods
+
+    def get_equal_split_amount
+      user_expenses_count = self.user_expenses.size
+      actual_amount = self.amount.to_f
+      split_amount_arr = []
+
+
+      user_expenses_count.times do
+        equal_split = ("%.2f" % (actual_amount / user_expenses_count.to_f)).to_f
+        actual_amount -= equal_split
         
-        unless pending_amount == owned_amount_sum
-          errors.add(:amount, "The total of everyone's owed shares ($#{owned_amount_sum}) is different than the total cost ($#{pending_amount})")
-        end 
-        
+        split_amount_arr << equal_split
+
+        user_expenses_count -= 1
       end
+
+      self.equal_split_amount = split_amount_arr.sort
     end
 end

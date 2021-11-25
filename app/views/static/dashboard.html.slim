@@ -3,21 +3,19 @@
   .main-area
     .top-bar
       h1.top-bar-title Dashboard
-      .top-bar-actions
-        button.btn.btn-primary type="button" data-bs-toggle="modal" data-bs-target="#expenseModal"  Add an expense
-        button.btn.btn-secondary type="button"  Settle up
+      = render "shared/top_bar_action"
 
     .dashboard-balances
       .balances-bar
         .balance-block
           p total balance
-          p + $11.50
+          p = total_balance
         .balance-block
           p you owe
-          p $0.00
+          p = total_owe
         .balance-block
           p you are owed
-          p $11.50
+          p = total_due_to_me
       .dashboard-detail
         .detail-block
           h2.detail-title you owe
@@ -43,14 +41,5 @@
             .user-info
               p anbu
               p owes you $11.50
-#expenseModal.modal.fade aria-hidden="true" aria-labelledby="expenseModalLabel" tabindex="-1" 
-  .modal-dialog
-    .modal-content
-      .modal-header
-        h5#expenseModalLabel.modal-title Add an expense
-        button.btn-close aria-label="Close" data-bs-dismiss="modal" type="button" 
-      .modal-body
-        = render "expenses/form", expense: @expense
-      .modal-footer
-        button.btn.btn-secondary data-bs-dismiss="modal" type="button"  Close
-        button.btn.btn-primary type="button" id="expenseSave" Save changes
+
+= render "shared/expense_modal"

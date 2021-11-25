@@ -1,9 +1,9 @@
 class StaticController < ApplicationController
   before_action :set_user, only: :person
+  before_action :set_expense
   before_action :set_friends
   
   def dashboard
-    @expense = Expense.new
   end
 
   def person
@@ -12,7 +12,11 @@ class StaticController < ApplicationController
   private
 
     def set_user
-      @user = User.find_by(id: params[:id])
+      @user = User.includes(user_expenses: { expense: :payer }).find_by(id: params[:id])
+    end
+
+    def set_expense
+      @expense = Expense.new
     end
 
     def set_friends

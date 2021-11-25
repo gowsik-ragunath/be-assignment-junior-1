@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_22_124304) do
+ActiveRecord::Schema.define(version: 2021_11_25_182723) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -84,8 +84,8 @@ ActiveRecord::Schema.define(version: 2021_11_22_124304) do
     t.bigint "user_id", null: false
     t.bigint "expense_id", null: false
     t.datetime "status"
-    t.decimal "paid_amount"
-    t.decimal "owed_amount"
+    t.decimal "paid_amount", precision: 10, scale: 2, default: "0.0"
+    t.decimal "owed_amount", precision: 10, scale: 2, default: "0.0"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["expense_id"], name: "index_user_expenses_on_expense_id"
@@ -102,6 +102,8 @@ ActiveRecord::Schema.define(version: 2021_11_22_124304) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "name"
     t.string "mobile_number"
+    t.decimal "owed_amount", precision: 10, scale: 2, default: "0.0"
+    t.decimal "lent_amount", precision: 10, scale: 2, default: "0.0"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
