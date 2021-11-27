@@ -118,6 +118,38 @@ RSpec.describe "Expense", type: :request, g112721: true do
         expect(@user_2.owed_amount).to eq(5)
       end
 
+      it "A user can create an Expense and when no other user are present in account", g112721qq: true do
+        @user_2.destroy
+        @user_3.destroy
+        @user_4.destroy
+
+        with_split_valid_params[:expense][:user_expenses_attributes].delete(:"1")
+        post expenses_path, params: with_split_valid_params, xhr: true
+        
+        # Check request response
+        expect(response).to have_http_status(200)
+        expect(response.body).to include(root_url)
+
+        # Check expense record
+        expense = Expense.order(:id).last
+
+        expect(expense.payer_id).to eq(@user.id)
+        expect(expense.amount).to eq(10)
+        expect(expense.description.body.to_plain_text).to include("test")
+        
+        # Check user expense records
+        user_expense = expense.user_expenses.find_by(user_id: @user.id)
+
+        # Amount will be equally split and owed_amount and paid_amount params will be ignored
+        expect(user_expense.owed_amount).to eq(0)
+        expect(user_expense.paid_amount).to eq(10)
+        
+
+        # Check overall user lent and owed amount
+        expect(@user.lent_amount).to eq(0)
+        expect(@user.owed_amount).to eq(0)
+      end
+
       it "A user can create an Expense without any other users", g112721a: true do
         with_split_valid_params[:expense][:user_expenses_attributes].delete(:"1")
         post expenses_path, params: with_split_valid_params.merge, xhr: true
@@ -564,6 +596,22 @@ RSpec.describe "Expense", type: :request, g112721: true do
         # Check request response
         expect(response).to have_http_status(200)
         expect(response.body).to include("Expense amount is not split with payer")
+
+        # Check expense record
+        expense = Expense.order(:id).last
+
+        expect(expense).to be_nil
+      end
+
+      it "A user cannot create an Expense and when user_id is not present in user_expense", g112721q: true do
+        user_expense = { "1": { owed_amount: 100, paid_amount: 100 } }
+        
+        with_split_valid_params[:expense][:user_expenses_attributes].update(user_expense)
+        post expenses_path, params: with_split_valid_params, xhr: true
+        
+        # Check request response
+        expect(response).to have_http_status(200)
+        expect(response.body).to include("user: must exist")
 
         # Check expense record
         expense = Expense.order(:id).last

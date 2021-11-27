@@ -7,7 +7,7 @@ class UserExpense < ApplicationRecord
   belongs_to :expense
 
   # Validation
-  validates_uniqueness_of :user_id, scope: :expense_id
+  validates :user, presence: true
   validate :reject_payer_owed_amount, if: :user_paid_expense_has_other_users?
   
 
@@ -45,6 +45,8 @@ class UserExpense < ApplicationRecord
     end
 
     def current_user_paid_expense?
+      return false if self.user_id.nil?
+      
       self.expense.payer_id == self.user.id
     end
 
