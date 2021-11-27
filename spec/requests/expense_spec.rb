@@ -117,6 +117,48 @@ RSpec.describe "Expense", type: :request, g112721: true do
         expect(@user_2.lent_amount).to eq(0)
         expect(@user_2.owed_amount).to eq(5)
       end
+      
+      it "A user can create an Expense by have non zero value in both owed_amount and paid_amount for any users and expense will be split", g112721kaa: true do
+        # Add payer user expense
+        user_2_expense = { "1": { user_id: @user_2.id, owed_amount: 90, paid_amount: 100 } }
+        
+        with_split_valid_params[:expense][:user_expenses_attributes].update(user_2_expense)
+        with_split_valid_params[:expense].update({ amount: 100, split: "1" })
+      
+        post expenses_path, params: with_split_valid_params, xhr: true
+        
+        # Check request response
+        expect(response).to have_http_status(200)
+        expect(response.body).to include(root_url)
+
+        # Reload exisiting records
+        @user.reload
+        @user_2.reload
+
+        # Check expense record
+        expense = Expense.order(:id).last
+
+        expect(expense.payer_id).to eq(@user.id)
+        expect(expense.amount).to eq(100)
+        expect(expense.description.body.to_plain_text).to include("test")
+        
+        # Check user expense records
+        user_expense = expense.user_expenses.find_by(user_id: @user.id)
+        user_2_expense = expense.user_expenses.find_by(user_id: @user_2.id)
+
+        # Amount will be equally split and owed_amount and paid_amount params will be ignored
+        expect(user_expense.owed_amount).to eq(0)
+        expect(user_expense.paid_amount).to eq(50)
+        expect(user_2_expense.owed_amount).to eq(50)
+        expect(user_2_expense.paid_amount).to eq(0)
+        
+
+        # Check overall user lent and owed amount
+        expect(@user.lent_amount).to eq(50)
+        expect(@user.owed_amount).to eq(0)
+        expect(@user_2.lent_amount).to eq(0)
+        expect(@user_2.owed_amount).to eq(50)
+      end
 
       it "A user can create an Expense and when no other user are present in account", g112721qq: true do
         @user_2.destroy
@@ -668,6 +710,28 @@ RSpec.describe "Expense", type: :request, g112721: true do
         # Check request response
         expect(response).to have_http_status(200)
         expect(response.body).to include("Amount: is invalid")
+
+        # Check expense record
+        expense = Expense.order(:id).last
+
+        expect(expense).to be_nil
+      end
+
+      it "A user cannot create an Expense by have non zero value in both owed_amount and paid_amount for any users", g112721ka: true do
+        # Add payer user expense
+        user_expense = { "0": { user_id: @user.id, owed_amount: 90, paid_amount: 100 } }
+        
+        without_split_valid_params[:expense][:user_expenses_attributes].update(user_expense)
+        without_split_valid_params[:expense].update({ amount: 100, split: "0" })
+      
+        post expenses_path, params: without_split_valid_params, xhr: true
+        
+        # Check request response
+        expect(response).to have_http_status(200)
+        expect(response.body).to include("User can&#39;t have both owed and paid amount")
+
+        # Reload exisiting records
+        @user.reload
 
         # Check expense record
         expense = Expense.order(:id).last

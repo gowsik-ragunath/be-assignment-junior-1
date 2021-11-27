@@ -9,7 +9,7 @@ class UserExpense < ApplicationRecord
   # Validation
   validates :user, presence: true
   validate :reject_payer_owed_amount, if: :user_paid_expense_has_other_users?
-  
+  validate :reject_owed_paid_amount
 
   # Callbacks
   before_create :set_owed_amount, if: :expense_split?
@@ -27,7 +27,11 @@ class UserExpense < ApplicationRecord
     # Boolean methods
 
     def user_paid_expense_has_other_users?
-      self.expense.user_expenses.size > 1 && current_user_paid_expense?
+      more_than_one_user_in_expense? && current_user_paid_expense?
+    end
+
+    def more_than_one_user_in_expense?
+      self.expense.user_expenses.size > 1
     end
 
     def expense_split?
@@ -53,6 +57,12 @@ class UserExpense < ApplicationRecord
     def reject_payer_owed_amount
       if self.owed_amount > 0
         errors.add(:owed_amount, "Payer can't owe any amount")
+      end
+    end
+
+    def reject_owed_paid_amount
+      if (self.owed_amount != 0 && self.paid_amount != 0) && more_than_one_user_in_expense? && !expense_split?
+        errors.add(:user, "User can't have both owed and paid amount")
       end
     end
 

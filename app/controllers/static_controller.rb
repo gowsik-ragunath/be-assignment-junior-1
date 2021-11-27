@@ -12,7 +12,7 @@ class StaticController < ApplicationController
   private
 
     def set_user
-      @user = User.find_by(id: params[:id])
+      @user = User.includes(user_expenses: [:user, { expense: :payer } ]).find_by(id: params[:id])
     end
 
     def set_expense

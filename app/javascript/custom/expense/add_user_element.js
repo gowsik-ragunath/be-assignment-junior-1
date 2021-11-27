@@ -4,6 +4,8 @@ $(document).on('turbolinks:load', function() {
 
 function addUser() {
   $("#addExpense").unbind("click");
+ 
+  updateAndDisableSelect();
   
   $("a[data-form-prepend]").click(function(e) {
 
