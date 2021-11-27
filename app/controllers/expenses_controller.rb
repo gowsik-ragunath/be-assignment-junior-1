@@ -12,7 +12,9 @@ class ExpensesController < ApplicationController
 				@new_expense = Expense.new
 
 				format.html { redirect_to root_url }
-				format.js
+				# As most of the element in dashboard need to be render
+				# Reload the page instead of updating elements in JS(in this case entier page)
+				format.js { redirect_to root_url }
 			else
 				format.js
 			end

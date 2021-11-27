@@ -2,10 +2,4 @@
     var errorDiv = document.getElementById("error-div"); 
 
     errorDiv.innerHTML = "<%= j render 'expenses/error_messages', record: @expense %>";
-<% else %>
-    var modalBody = document.querySelector(".modal-body");
-    var modalCancelBtn = document.querySelector("button[data-bs-dismiss=\"modal\"]")
-    
-    modalBody.innerHTML = "<%= j render 'expenses/form', expense: @new_expense %>";
-    modalCancelBtn.click();
 <% end %>

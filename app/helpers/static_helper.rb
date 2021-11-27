@@ -16,6 +16,10 @@ module StaticHelper
         dollar_string(current_user.lent_amount)
     end
 
+    def owed_amount(amount)
+        dollar_string(amount)
+    end
+
     def dollar_string(amount)
         if amount > 0
             "+ $#{amount.abs}"

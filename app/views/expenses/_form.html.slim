@@ -30,7 +30,7 @@
 	.form-check
 		= form.check_box :split, class: "form-check-input", checked: true
 		.mb-3.form-check-label
-			= form.label "Check if amount need to be split"
+			= form.label "Check if amount need to be split(Payer must be present)"
 	/! -Split div ends
 
 	= form.fields_for :user_expenses, expense.user_expenses.build do |f|

@@ -8,6 +8,7 @@ class UserExpense < ApplicationRecord
 
   # Validation
   validates_uniqueness_of :user_id, scope: :expense_id
+  validate :reject_payer_owed_amount, if: :user_paid_expense_has_other_users?
   
 
   # Callbacks
@@ -16,9 +17,18 @@ class UserExpense < ApplicationRecord
   after_create_commit :create_friend, if: :can_add_as_friend?
   after_create_commit :update_user_owed_paid_amount
 
+  # Scopes
+
+  scope :loaned, -> (user_id) { includes(:user).where.not(owed_amount: 0).where.not(user_id: user_id) }
+  scope :user_owed, -> (user_id) { includes(:user).where.not(owed_amount: 0).where(user_id: user_id) }
+
   private
 
     # Boolean methods
+
+    def user_paid_expense_has_other_users?
+      self.expense.user_expenses.size > 1 && current_user_paid_expense?
+    end
 
     def expense_split?
       self.expense.equal_split?
@@ -38,6 +48,11 @@ class UserExpense < ApplicationRecord
       self.expense.payer_id == self.user.id
     end
 
+    def reject_payer_owed_amount
+      if self.owed_amount > 0
+        errors.add(:owed_amount, "Payer can't owe any amount")
+      end
+    end
 
     # Callback methods
 
@@ -49,8 +64,10 @@ class UserExpense < ApplicationRecord
 
       if current_user_paid_expense?
         self.paid_amount = split_amount
+        self.owed_amount = 0
       else
         self.owed_amount = split_amount
+        self.paid_amount = 0
       end
     end
 
@@ -60,13 +77,16 @@ class UserExpense < ApplicationRecord
     end
 
     def update_user_owed_paid_amount
+      # return when current user is the only user in expense
+      return if (current_user_paid_expense? && self.expense.user_expenses.size == 1)
+
       # Update the paid and owed amount field in user record
       if current_user_paid_expense?
         if expense_split?
           unpaid_amount = self.expense.amount.to_f - self.paid_amount.to_f
-          self.user.lent_amount = unpaid_amount
+          self.user.lent_amount += unpaid_amount
         else
-          self.user.lent_amount = self.expense.user_expenses.collect(&:owed_amount).compact.sum
+          self.user.lent_amount += self.paid_amount.to_f
         end
       else
         self.user.owed_amount += self.owed_amount.to_f

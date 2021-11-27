@@ -1,7 +1,7 @@
 .user_expense_field
 	.form-label
 		= f.label :share_with
-	= f.select :user_id, options_from_collection_for_select(User.all, :id, :name, get_user_id_field_value(local_assigns))
+	= f.select :user_id, options_from_collection_for_select(User.all, :id, :name, get_user_id_field_value(local_assigns)), {}, { class: "user_select" }
 
 
 	= link_to "❌", "javascript:void(0)", class: "ml-1 remove-element"

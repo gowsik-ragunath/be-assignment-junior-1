@@ -3,6 +3,8 @@ $(document).on('turbolinks:load', function() {
 })
 
 function addUser() {
+  $("#addExpense").unbind("click");
+  
   $("a[data-form-prepend]").click(function(e) {
 
     var obj = $($(this).attr("data-form-prepend"));
@@ -10,7 +12,8 @@ function addUser() {
     var expense_split = $("#expense_split").is(':checked');
     
     for(let temp_object of obj) {
-      showExpenseElements(expense_split, temp_object);
+      showExpenseElements(expense_split, obj);
+      removeSelectedOption(obj);
 
       var object_name = $(temp_object).attr("name");
 
@@ -36,9 +39,26 @@ function addUser() {
 }
 
 function showExpenseElements(expense_split, temp_object) {
-  if(expense_split && $(temp_object).hasClass("unequal_amount")) {
-    $(temp_object).addClass("disable");
+  var unequalAmount = $(temp_object).find(".unequal_amount");
+
+  if(expense_split && unequalAmount) { 
+    $(unequalAmount).addClass("disable");
   } else {
-    $(temp_object).removeClass("disable");
+    $(unequalAmount).removeClass("disable");
   }
+}
+
+function removeSelectedOption(temp_object) {
+  var selected_options = $(".user_select").map( function() {
+    return $(this).val();
+  })
+
+  var selectElement = $(temp_object).find('select');
+
+  $(selectElement).find('option').each( function(option) {
+    if($.inArray($(this).val(), selected_options) > -1) {
+      $(this).remove();
+    }
+    
+  })
 }
