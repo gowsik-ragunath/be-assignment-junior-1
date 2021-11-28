@@ -24,7 +24,7 @@
               .user-detail
                 img.user-img alt="profile" src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" /
                 .user-info
-                  p = get_user_name(user_expense.user)
+                  p = get_user_name(user_expense.expense.payer)
                   p = "you owe $#{user_expense.owed_amount}"
         .detail-block
           h2.detail-title you are owed
