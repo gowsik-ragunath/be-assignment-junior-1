@@ -41,4 +41,9 @@ module ApplicationHelper
 		user.name.present? ? user.name : user.email
     end
 
+	def get_payer_user_name(payer_id)
+		payer_id_name_hash = current_user.payer_id_name_hash
+		payer_id_name_hash.has_key?(payer_id) ? payer_id_name_hash[payer_id] : ""
+	end
+
 end

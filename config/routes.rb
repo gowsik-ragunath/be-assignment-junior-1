@@ -4,6 +4,8 @@ Rails.application.routes.draw do
 
   root to: "static#dashboard"
   get 'people/:id', to: 'static#person', as: :people
+  patch 'user/:id/settle_up', to: 'users#settle_up', as: :settle_up
+
 
   resources :expenses
 end

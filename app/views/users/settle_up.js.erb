@@ -1,0 +1,11 @@
+var settleUpModal = document.getElementById("settleUpModal");
+
+<% if current_user.errors.any? %>
+    var errorDiv = settleUpModal.querySelector("#error-div"); 
+
+    errorDiv.innerHTML = "<%= j render 'shared/error_messages', record: current_user %>";
+<% else %>
+    var successDiv = settleUpModal.querySelector("#success-div");
+
+    successDiv.innerHTML = "<%= j render 'users/success_addition_message', record: current_user %>";
+<% end %>

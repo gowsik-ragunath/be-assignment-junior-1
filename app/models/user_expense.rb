@@ -16,11 +16,13 @@ class UserExpense < ApplicationRecord
 
   after_create_commit :create_friend, if: :can_add_as_friend?
   after_create_commit :update_user_owed_paid_amount
+  after_update_commit :update_user_owed_amount, if: -> { p self.owed_amount_previously_changed? }
 
   # Scopes
 
   scope :loaned, -> (user_id) { includes(:user).where.not(owed_amount: 0).where.not(user_id: user_id) }
   scope :user_owed, -> (user_id) { includes(:user).where.not(owed_amount: 0).where(user_id: user_id) }
+  scope :owed_expenses, -> (user_id) { joins(:expense).includes(expense: :payer).user_owed(user_id).where("expenses.payer_id != ?", user_id) }
 
   private
 
@@ -106,5 +108,21 @@ class UserExpense < ApplicationRecord
       end
 
       self.user.save
+    end
+
+    def update_user_owed_amount
+      self.user.owed_amount -= self.owed_amount.to_f
+      old_owed_amount = owed_amount_previously_was.to_f
+
+      if self.user.save
+        payer = self.expense.payer
+        return unless payer.present?
+
+        # Reduce the old lent amount and sum the owed amount to get the new lent amount
+        payer.lent_amount -= old_owed_amount
+        payer.lent_amount += self.owed_amount.to_f
+
+        payer.save
+      end
     end
 end

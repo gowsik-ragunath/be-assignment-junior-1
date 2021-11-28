@@ -1,0 +1,5 @@
+.alert.alert-success
+    div = "Amount paid"
+    - if current_user.addition_amount.to_f > 0
+        div = "Retuned amount: $#{current_user.addition_amount}"
+        

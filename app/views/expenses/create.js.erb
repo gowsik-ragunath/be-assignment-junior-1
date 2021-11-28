@@ -1,5 +1,5 @@
 <% if @expense.errors.any? %>
     var errorDiv = document.getElementById("error-div"); 
 
-    errorDiv.innerHTML = "<%= j render 'expenses/error_messages', record: @expense %>";
+    errorDiv.innerHTML = "<%= j render 'shared/error_messages', record: @expense %>";
 <% end %>

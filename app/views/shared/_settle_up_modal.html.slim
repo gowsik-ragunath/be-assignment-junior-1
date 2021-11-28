@@ -1,0 +1,13 @@
+#settleUpModal.modal.fade aria-hidden="true" aria-labelledby="settleUpModalLabel" tabindex="-1" 
+  .modal-dialog
+    .modal-content
+      .modal-header
+        h5#expenseModalLabel.modal-title Settle Up
+        button.btn-close aria-label="Close" data-bs-dismiss="modal" type="button" 
+      .modal-body
+        = render "expenses/split_form", user: current_user
+        - current_user.payer_specific_owed_amount.each do |payer_id, amount|
+            p id="user_expense_#{payer_id}" class="disable split_up" = "you owed #{amount} to #{get_payer_user_name(payer_id)}"
+      .modal-footer
+        button.btn.btn-secondary id="modal-close" data-bs-dismiss="modal" type="button"  Close
+        button.btn.btn-primary type="button" id="settleUpSave" Save changes

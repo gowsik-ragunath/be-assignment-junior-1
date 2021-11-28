@@ -1,0 +1,21 @@
+= form_with url: settle_up_path(user), model: user, method: :patch, local: false do |form|
+	
+	#error-div
+	#success-div
+    
+	/! - Pay to div starts
+	.form-label
+		= form.label :pay_to
+	= form.select :pay_to, 
+        options_from_collection_for_select(user.expense_paid_users, :id, :name), 
+        { prompt: "Select a User" }, 
+        { class: "form-select form-select-sm mb-3" }
+	/! -Pay to div ends
+
+	/! -amount div starts
+	.form-label
+		= form.label :amount
+	= form.text_field :amount, class: "mb-3 form-control"
+	/! -amount div ends
+
+	= form.submit "Pay up", id: "payup", class: "disable"
