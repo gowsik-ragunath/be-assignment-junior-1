@@ -111,10 +111,18 @@ class UserExpense < ApplicationRecord
     end
 
     def update_user_owed_amount
-      self.user.owed_amount -= self.owed_amount.to_f
       old_owed_amount = owed_amount_previously_was.to_f
 
+      # Update current users owed amount
+      if self.owed_amount.to_f == 0
+        self.user.owed_amount -= old_owed_amount
+      else
+        self.user.owed_amount -= (old_owed_amount - self.owed_amount.to_f)
+      end
+  
+  
       if self.user.save
+        # Update payer lent amount
         payer = self.expense.payer
         return unless payer.present?
 
